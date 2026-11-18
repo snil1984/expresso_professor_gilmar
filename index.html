@@ -28,7 +28,7 @@
             animation: bounce-subtle 1.6s infinite ease-in-out;
         }
         @keyframes pop-in {
-            0% { transform: scale(0.85) translateY(10px); opacity: 0; }
+            0% { transform: scale(0.88) translateY(8px); opacity: 0; }
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
         .animate-pop-in {
@@ -55,7 +55,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 overflow-x-hidden">
 
-    <!-- TELA INICIAL EM TELA CHEIA (EVITA CORTES NO CELULAR) -->
+    <!-- TELA INICIAL EM TELA CHEIA -->
     <div id="startOverlay" class="fixed inset-0 bg-gradient-to-br from-emerald-950 via-green-900 to-slate-950 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-40 overflow-y-auto">
         <div class="w-full max-w-2xl bg-white/10 border-2 border-yellow-400/40 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-sm my-auto">
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
@@ -162,26 +162,26 @@
         </div>
 
         <!-- Área Principal do Canvas -->
-        <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] min-h-[260px] max-h-[65vh] bg-sky-300 overflow-hidden" id="gameContainer">
+        <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] min-h-[265px] max-h-[65vh] bg-sky-300 overflow-hidden" id="gameContainer">
             <canvas id="gameCanvas" class="w-full h-full block"></canvas>
 
-            <!-- Balão Informativo das Melhorias nas Paradas -->
-            <div id="infoBalloon" class="hidden absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-[94%] sm:w-[92%] max-w-lg bg-white/95 text-slate-900 rounded-2xl shadow-2xl border-2 sm:border-4 border-emerald-600 p-2.5 sm:p-4 z-20 animate-pop-in">
-                <div class="flex items-start gap-2.5 sm:gap-3">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-sm sm:text-lg font-extrabold shadow" id="balloonBadge">
+            <!-- Balão Informativo das Melhorias nas Paradas (CENTRALIZADO SEM CONFLITO DE TRANSFORM) -->
+            <div id="infoBalloon" class="hidden absolute top-2 sm:top-3 inset-x-0 mx-auto w-[92%] sm:w-[90%] max-w-lg bg-white/95 text-slate-900 rounded-2xl shadow-2xl border-2 sm:border-4 border-emerald-600 p-2 sm:p-4 z-20 animate-pop-in">
+                <div class="flex items-start gap-2 sm:gap-3">
+                    <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs sm:text-lg font-extrabold shadow" id="balloonBadge">
                         1
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex flex-wrap items-center justify-between gap-1">
-                            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-1.5 sm:px-2 py-0.5 rounded-full truncate">
                                 Melhoria na Parada
                             </span>
-                            <span class="text-[10px] sm:text-[11px] font-bold text-amber-700">+2 Alunos a bordo</span>
+                            <span class="text-[9px] sm:text-[11px] font-bold text-amber-700 shrink-0">+2 Alunos</span>
                         </div>
-                        <h3 id="balloonTitle" class="text-xs sm:text-base font-extrabold text-slate-900 mt-1 leading-tight">
+                        <h3 id="balloonTitle" class="text-[11px] sm:text-base font-extrabold text-slate-900 mt-0.5 sm:mt-1 leading-tight">
                             Otimização de Rotas e Redução do Tempo de Viagem
                         </h3>
-                        <p id="balloonDesc" class="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-snug sm:leading-relaxed">
+                        <p id="balloonDesc" class="text-[10px] sm:text-xs text-slate-600 mt-0.5 leading-tight sm:leading-relaxed">
                             Trajetos planejados para que nenhum estudante passe horas desnecessárias no trânsito.
                         </p>
                     </div>
@@ -190,9 +190,9 @@
                 <div class="hidden sm:block w-4 h-4 bg-white border-r-4 border-b-4 border-emerald-600 rotate-45 mx-auto -mb-5 mt-1"></div>
             </div>
 
-            <!-- Indicador de Aproximação de Parada -->
-            <div id="brakeAlert" class="hidden absolute top-2 right-2 sm:top-3 sm:right-3 bg-yellow-400 text-slate-950 font-extrabold text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl shadow-lg border-2 border-slate-900 animate-bounce">
-                <i class="fa-solid fa-hand"></i> Parada à frente! Reduza!
+            <!-- Indicador de Aproximação de Parada (CENTRALIZADO NO TOPO) -->
+            <div id="brakeAlert" class="hidden absolute top-2 sm:top-3 inset-x-0 mx-auto w-fit max-w-[90%] bg-yellow-400 text-slate-950 font-extrabold text-[10px] sm:text-xs px-3 py-1 sm:py-1.5 rounded-xl shadow-lg border-2 border-slate-900 animate-bounce text-center">
+                <i class="fa-solid fa-hand"></i> Parada à frente! Reduza para embarcar!
             </div>
         </div>
 
@@ -453,7 +453,6 @@
 
         // --- FUNÇÕES DE DESENHO DO CENÁRIO ---
         function drawEnvironment() {
-            // Céu
             const skyGrad = ctx.createLinearGradient(0, 0, 0, 340);
             skyGrad.addColorStop(0, '#0284c7');
             skyGrad.addColorStop(0.65, '#7dd3fc');
@@ -461,13 +460,11 @@
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, WIDTH, 340);
 
-            // Sol
             ctx.fillStyle = '#fef08a';
             ctx.beginPath();
             ctx.arc(780, 68, 34, 0, Math.PI * 2);
             ctx.fill();
 
-            // Nuvens em paralaxe suave
             ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
             for (let i = 0; i < 6; i++) {
                 const cx = ((i * 260 - worldX * 0.15) % (WIDTH + 260) + (WIDTH + 260)) % (WIDTH + 260) - 100;
@@ -479,7 +476,6 @@
                 ctx.fill();
             }
 
-            // Colinas verdes ao fundo
             ctx.fillStyle = '#22c55e';
             for (let i = 0; i < 5; i++) {
                 const hx = ((i * 340 - worldX * 0.3) % (WIDTH + 340) + (WIDTH + 340)) % (WIDTH + 340) - 150;
@@ -488,17 +484,13 @@
                 ctx.fill();
             }
 
-            // Gramado da margem
             ctx.fillStyle = '#16a34a';
             ctx.fillRect(0, 330, WIDTH, 34);
 
-            // Árvores e postes solares decorativos
             for (let i = 0; i < 8; i++) {
                 const tx = ((i * 210 - worldX * 0.85) % (WIDTH + 210) + (WIDTH + 210)) % (WIDTH + 210) - 60;
-                // Tronco
                 ctx.fillStyle = '#78350f';
                 ctx.fillRect(tx + 12, 292, 10, 42);
-                // Copa
                 ctx.fillStyle = '#15803d';
                 ctx.beginPath();
                 ctx.arc(tx + 17, 282, 24, 0, Math.PI * 2);
@@ -509,17 +501,14 @@
                 ctx.fill();
             }
 
-            // Estrada asfaltada
             ctx.fillStyle = '#334155';
             ctx.fillRect(0, 364, WIDTH, 92);
 
-            // Meio-fio verde e amarelo
             ctx.fillStyle = '#15803d';
             ctx.fillRect(0, 360, WIDTH, 6);
             ctx.fillStyle = '#facc15';
             ctx.fillRect(0, 452, WIDTH, 28);
 
-            // Faixas tracejadas da pista
             ctx.fillStyle = '#f8fafc';
             const dashPeriod = 90;
             const dashOffset = -(worldX % dashPeriod);
@@ -534,7 +523,6 @@
                 const screenX = stop.x - worldX + 190;
                 if (screenX < -180 || screenX > WIDTH + 180) return;
 
-                // Zona Segura Demarcada no Asfalto (Faixa Verde)
                 ctx.fillStyle = stop.boarded ? 'rgba(34, 197, 94, 0.25)' : 'rgba(250, 204, 21, 0.35)';
                 ctx.fillRect(screenX - 85, 366, 170, 84);
 
@@ -544,12 +532,10 @@
                 ctx.strokeRect(screenX - 85, 366, 170, 84);
                 ctx.setLineDash([]);
 
-                // Abrigo Coberto e Iluminado da Parada
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(screenX - 42, 250, 6, 110);
                 ctx.fillRect(screenX + 36, 250, 6, 110);
 
-                // Telhado do abrigo
                 ctx.fillStyle = '#15803d';
                 ctx.beginPath();
                 ctx.roundRect(screenX - 52, 238, 104, 16, 6);
@@ -558,11 +544,9 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Luz LED do abrigo
                 ctx.fillStyle = '#fef08a';
                 ctx.fillRect(screenX - 25, 254, 50, 4);
 
-                // Placa da Parada
                 ctx.fillStyle = stop.boarded ? '#16a34a' : '#eab308';
                 ctx.beginPath();
                 ctx.roundRect(screenX - 36, 206, 72, 26, 8);
@@ -572,7 +556,6 @@
                 ctx.textAlign = 'center';
                 ctx.fillText(stop.boarded ? `✓ PARADA ${stop.number}` : `PARADA ${stop.number}`, screenX, 223);
 
-                // Estudantes aguardando embarque (antes de parar)
                 if (!stop.boarded) {
                     const s1 = STUDENT_COLORS[(stop.number * 2) % STUDENT_COLORS.length];
                     const s2 = STUDENT_COLORS[(stop.number * 2 + 1) % STUDENT_COLORS.length];
