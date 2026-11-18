@@ -55,38 +55,90 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 overflow-x-hidden">
 
+    <!-- TELA INICIAL EM TELA CHEIA (EVITA CORTES NO CELULAR) -->
+    <div id="startOverlay" class="fixed inset-0 bg-gradient-to-br from-emerald-950 via-green-900 to-slate-950 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 z-40 overflow-y-auto">
+        <div class="w-full max-w-2xl bg-white/10 border-2 border-yellow-400/40 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-sm my-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                
+                <!-- Coluna da Foto do Candidato a Diretor -->
+                <div class="sm:col-span-5 flex flex-col items-center text-center bg-white/95 text-slate-900 rounded-2xl p-3 sm:p-3.5 border-4 border-yellow-400 shadow-lg">
+                    <div class="relative w-24 h-28 sm:w-32 sm:h-36 rounded-xl overflow-hidden bg-gradient-to-b from-emerald-100 to-emerald-200 border-2 border-emerald-600 shadow-inner flex items-center justify-center">
+                        <img id="startPhotoPreview" src="" alt="Foto do Candidato a Diretor" class="w-full h-full object-cover">
+                    </div>
+
+                    <label for="candidatePhotoInput" class="mt-2 cursor-pointer bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-camera"></i> Trocar Foto do Diretor
+                    </label>
+                    <input type="file" id="candidatePhotoInput" accept="image/*" class="hidden">
+
+                    <div class="mt-2 pt-1.5 border-t border-slate-200 w-full">
+                        <p class="handwritten text-xl text-emerald-900 font-bold leading-none">Prof. Gilmar Macedo Brito</p>
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">Candidato a Diretor</p>
+                    </div>
+                </div>
+
+                <!-- Coluna de Apresentação da Missão -->
+                <div class="sm:col-span-7 flex flex-col justify-between text-center sm:text-left space-y-2.5 sm:space-y-3">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 bg-yellow-400 text-slate-950 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                            <span>🦗</span> Expresso do Grilo
+                        </span>
+                        <h2 class="text-lg sm:text-2xl font-extrabold text-white mt-1.5 leading-tight">
+                            Transporte Escolar Seguro e Confortável!
+                        </h2>
+                        <p class="text-xs sm:text-sm text-emerald-100 mt-1 leading-relaxed">
+                            Assuma o volante com o <strong>Grilo Motorista</strong>! Acelere na estrada, pare suavemente nas <strong>5 paradas seguras</strong> para embarcar os estudantes e chegue até a <strong>ESCOLA</strong>.
+                        </p>
+                    </div>
+
+                    <div class="bg-emerald-950/70 border border-emerald-400/30 rounded-xl p-2 sm:p-2.5 text-[11px] text-emerald-100 space-y-1">
+                        <div class="font-bold text-yellow-300 uppercase tracking-wide">Controles Rápidos:</div>
+                        <div class="flex flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2">
+                            <span class="bg-white/10 px-2 py-0.5 rounded"><kbd class="font-bold text-yellow-300">→</kbd> / <kbd class="font-bold text-yellow-300">ESPAÇO</kbd> Acelerar</span>
+                            <span class="bg-white/10 px-2 py-0.5 rounded"><kbd class="font-bold text-yellow-300">←</kbd> Frear na Parada</span>
+                        </div>
+                    </div>
+
+                    <button id="btnStartRoute" class="w-full bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-300 hover:from-yellow-300 hover:to-amber-300 text-slate-950 font-extrabold py-3 px-6 rounded-2xl shadow-lg shadow-yellow-500/25 transition transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-base">
+                        <i class="fa-solid fa-bus"></i> Iniciar Rota
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Container Principal do Jogo -->
     <div class="relative w-full max-w-5xl bg-slate-800 rounded-3xl shadow-2xl border-4 border-emerald-500/40 overflow-hidden flex flex-col">
         
         <!-- HUD Superior -->
         <div class="w-full bg-slate-950/90 px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between border-b border-slate-700/70 gap-2">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600/20 border border-emerald-400/40 flex items-center justify-center text-xl sm:text-2xl">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-600/20 border border-emerald-400/40 flex items-center justify-center text-lg sm:text-2xl shrink-0">
                     🦗
                 </div>
                 <div>
-                    <h1 class="text-sm sm:text-lg font-extrabold bg-gradient-to-r from-emerald-400 via-yellow-300 to-emerald-300 bg-clip-text text-transparent leading-tight">
+                    <h1 class="text-xs sm:text-lg font-extrabold bg-gradient-to-r from-emerald-400 via-yellow-300 to-emerald-300 bg-clip-text text-transparent leading-tight">
                         Expresso do Grilo: Transporte Escolar Seguro
                     </h1>
-                    <p class="text-[11px] text-amber-300 font-semibold">
+                    <p class="text-[10px] sm:text-[11px] text-amber-300 font-semibold">
                         Prof. Gilmar Macedo Brito • Direção Escolar
                     </p>
                 </div>
             </div>
 
             <!-- Indicadores de Status -->
-            <div class="flex items-center gap-2 sm:gap-3 text-xs">
-                <div class="bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 sm:gap-3 text-[11px] sm:text-xs w-full sm:w-auto justify-between sm:justify-end">
+                <div class="bg-slate-900 px-2.5 py-1 sm:py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
                     <i class="fa-solid fa-location-dot text-yellow-400"></i>
                     <span class="text-slate-400 hidden sm:inline">Paradas:</span>
                     <span id="hudStopsText" class="font-bold text-yellow-300">0/5</span>
                 </div>
-                <div class="bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
+                <div class="bg-slate-900 px-2.5 py-1 sm:py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
                     <i class="fa-solid fa-users text-sky-400"></i>
                     <span class="text-slate-400 hidden sm:inline">Alunos:</span>
                     <span id="hudStudentsText" class="font-bold text-sky-300">2/12</span>
                 </div>
-                <div class="bg-emerald-950/80 px-2.5 py-1.5 rounded-xl border border-emerald-500/40 flex items-center gap-1.5">
+                <div class="bg-emerald-950/80 px-2.5 py-1 sm:py-1.5 rounded-xl border border-emerald-500/40 flex items-center gap-1.5">
                     <i class="fa-solid fa-gauge-high text-emerald-400"></i>
                     <span id="hudSpeedText" class="font-bold text-emerald-300">0 km/h</span>
                 </div>
@@ -94,117 +146,65 @@
         </div>
 
         <!-- Barra de Progresso da Rota -->
-        <div class="w-full bg-slate-950 px-4 py-1.5 border-b border-slate-800">
+        <div class="w-full bg-slate-950 px-3 sm:px-4 py-1.5 border-b border-slate-800">
             <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden relative">
                 <div id="routeProgressBar" class="h-full bg-gradient-to-r from-emerald-500 via-yellow-400 to-emerald-400 transition-all duration-100 rounded-full" style="width: 0%;"></div>
             </div>
-            <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
+            <div class="flex justify-between text-[9px] sm:text-[10px] text-slate-400 mt-1 font-semibold">
                 <span>Início</span>
-                <span id="stopBadge1" class="transition-colors">Parada 1</span>
-                <span id="stopBadge2" class="transition-colors">Parada 2</span>
-                <span id="stopBadge3" class="transition-colors">Parada 3</span>
-                <span id="stopBadge4" class="transition-colors">Parada 4</span>
-                <span id="stopBadge5" class="transition-colors">Parada 5</span>
+                <span id="stopBadge1" class="transition-colors"><span class="sm:hidden">P1</span><span class="hidden sm:inline">Parada 1</span></span>
+                <span id="stopBadge2" class="transition-colors"><span class="sm:hidden">P2</span><span class="hidden sm:inline">Parada 2</span></span>
+                <span id="stopBadge3" class="transition-colors"><span class="sm:hidden">P3</span><span class="hidden sm:inline">Parada 3</span></span>
+                <span id="stopBadge4" class="transition-colors"><span class="sm:hidden">P4</span><span class="hidden sm:inline">Parada 4</span></span>
+                <span id="stopBadge5" class="transition-colors"><span class="sm:hidden">P5</span><span class="hidden sm:inline">Parada 5</span></span>
                 <span class="text-emerald-400 font-bold"><i class="fa-solid fa-school"></i> ESCOLA</span>
             </div>
         </div>
 
         <!-- Área Principal do Canvas -->
-        <div class="relative w-full aspect-[16/9] min-h-[290px] max-h-[65vh] bg-sky-300 overflow-hidden" id="gameContainer">
+        <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] min-h-[260px] max-h-[65vh] bg-sky-300 overflow-hidden" id="gameContainer">
             <canvas id="gameCanvas" class="w-full h-full block"></canvas>
 
             <!-- Balão Informativo das Melhorias nas Paradas -->
-            <div id="infoBalloon" class="hidden absolute top-3 left-1/2 -translate-x-1/2 w-[92%] max-w-lg bg-white/95 text-slate-900 rounded-2xl shadow-2xl border-4 border-emerald-600 p-3 sm:p-4 z-20 animate-pop-in">
-                <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-lg font-extrabold shadow" id="balloonBadge">
+            <div id="infoBalloon" class="hidden absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-[94%] sm:w-[92%] max-w-lg bg-white/95 text-slate-900 rounded-2xl shadow-2xl border-2 sm:border-4 border-emerald-600 p-2.5 sm:p-4 z-20 animate-pop-in">
+                <div class="flex items-start gap-2.5 sm:gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-sm sm:text-lg font-extrabold shadow" id="balloonBadge">
                         1
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                                Melhoria Conquistada na Parada
+                        <div class="flex flex-wrap items-center justify-between gap-1">
+                            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                                Melhoria na Parada
                             </span>
-                            <span class="text-[11px] font-bold text-amber-700">+2 Alunos a bordo</span>
+                            <span class="text-[10px] sm:text-[11px] font-bold text-amber-700">+2 Alunos a bordo</span>
                         </div>
-                        <h3 id="balloonTitle" class="text-sm sm:text-base font-extrabold text-slate-900 mt-1 leading-snug">
+                        <h3 id="balloonTitle" class="text-xs sm:text-base font-extrabold text-slate-900 mt-1 leading-tight">
                             Otimização de Rotas e Redução do Tempo de Viagem
                         </h3>
-                        <p id="balloonDesc" class="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                        <p id="balloonDesc" class="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-snug sm:leading-relaxed">
                             Trajetos planejados para que nenhum estudante passe horas desnecessárias no trânsito.
                         </p>
                     </div>
                 </div>
                 <!-- Triângulo apontando para o ônibus -->
-                <div class="w-4 h-4 bg-white border-r-4 border-b-4 border-emerald-600 rotate-45 mx-auto -mb-5 mt-1"></div>
+                <div class="hidden sm:block w-4 h-4 bg-white border-r-4 border-b-4 border-emerald-600 rotate-45 mx-auto -mb-5 mt-1"></div>
             </div>
 
             <!-- Indicador de Aproximação de Parada -->
-            <div id="brakeAlert" class="hidden absolute top-3 right-3 bg-yellow-400 text-slate-950 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-lg border-2 border-slate-900 animate-bounce">
-                <i class="fa-solid fa-hand"></i> Parada à frente! Reduza para embarcar!
-            </div>
-
-            <!-- TELA INICIAL (OVERLAY) -->
-            <div id="startOverlay" class="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-green-900/95 to-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-6 z-30 overflow-y-auto">
-                <div class="w-full max-w-2xl bg-white/10 border-2 border-yellow-400/40 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-sm">
-                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                        
-                        <!-- Coluna da Foto do Candidato a Diretor -->
-                        <div class="sm:col-span-5 flex flex-col items-center text-center bg-white/95 text-slate-900 rounded-2xl p-3.5 border-4 border-yellow-400 shadow-lg">
-                            <div class="relative w-28 h-32 sm:w-32 sm:h-36 rounded-xl overflow-hidden bg-gradient-to-b from-emerald-100 to-emerald-200 border-2 border-emerald-600 shadow-inner flex items-center justify-center">
-                                <img id="startPhotoPreview" src="" alt="Foto do Candidato a Diretor" class="w-full h-full object-cover">
-                            </div>
-
-                            <label for="candidatePhotoInput" class="mt-2.5 cursor-pointer bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-camera"></i> Trocar Foto do Diretor
-                            </label>
-                            <input type="file" id="candidatePhotoInput" accept="image/*" class="hidden">
-
-                            <div class="mt-2 pt-2 border-t border-slate-200 w-full">
-                                <p class="handwritten text-xl text-emerald-900 font-bold leading-none">Prof. Gilmar Macedo Brito</p>
-                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">Candidato a Diretor</p>
-                            </div>
-                        </div>
-
-                        <!-- Coluna de Apresentação da Missão -->
-                        <div class="sm:col-span-7 flex flex-col justify-between text-center sm:text-left space-y-3">
-                            <div>
-                                <span class="inline-flex items-center gap-1.5 bg-yellow-400 text-slate-950 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
-                                    <span>🦗</span> Expresso do Grilo
-                                </span>
-                                <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1.5 leading-tight">
-                                    Transporte Escolar Seguro e Confortável!
-                                </h2>
-                                <p class="text-xs sm:text-sm text-emerald-100 mt-1.5 leading-relaxed">
-                                    Assuma o volante com o <strong>Grilo Motorista</strong>! Acelere na estrada, pare suavemente nas <strong>5 paradas seguras</strong> para embarcar os estudantes e chegue até a <strong>ESCOLA</strong>.
-                                </p>
-                            </div>
-
-                            <div class="bg-emerald-950/70 border border-emerald-400/30 rounded-xl p-2.5 text-[11px] text-emerald-100 space-y-1">
-                                <div class="font-bold text-yellow-300 uppercase tracking-wide">Controles Rápidos:</div>
-                                <div class="flex flex-wrap justify-center sm:justify-start gap-2">
-                                    <span class="bg-white/10 px-2 py-0.5 rounded"><kbd class="font-bold text-yellow-300">→</kbd> / <kbd class="font-bold text-yellow-300">ESPAÇO</kbd> Acelerar</span>
-                                    <span class="bg-white/10 px-2 py-0.5 rounded"><kbd class="font-bold text-yellow-300">←</kbd> Frear na Parada</span>
-                                </div>
-                            </div>
-
-                            <button id="btnStartRoute" class="w-full bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-300 hover:from-yellow-300 hover:to-amber-300 text-slate-950 font-extrabold py-3 px-6 rounded-2xl shadow-lg shadow-yellow-500/25 transition transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-base">
-                                <i class="fa-solid fa-bus"></i> Iniciar Rota
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div id="brakeAlert" class="hidden absolute top-2 right-2 sm:top-3 sm:right-3 bg-yellow-400 text-slate-950 font-extrabold text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl shadow-lg border-2 border-slate-900 animate-bounce">
+                <i class="fa-solid fa-hand"></i> Parada à frente! Reduza!
             </div>
         </div>
 
         <!-- Controles Táteis Grandes na Parte Inferior (Mobile & Desktop) -->
-        <div class="w-full bg-slate-950 p-3 sm:p-4 border-t border-slate-800 grid grid-cols-2 gap-3 sm:gap-4">
-            <button id="btnBrakeTouch" class="bg-gradient-to-b from-rose-500 to-red-600 active:from-red-600 active:to-red-700 text-white font-extrabold py-3.5 sm:py-4 px-4 rounded-2xl shadow-lg shadow-red-950/50 border-b-4 border-red-800 active:border-b-0 active:translate-y-1 transition flex items-center justify-center gap-2.5 text-sm sm:text-base">
-                <i class="fa-solid fa-hand text-lg sm:text-xl"></i>
+        <div class="w-full bg-slate-950 p-2.5 sm:p-4 border-t border-slate-800 grid grid-cols-2 gap-2.5 sm:gap-4">
+            <button id="btnBrakeTouch" class="bg-gradient-to-b from-rose-500 to-red-600 active:from-red-600 active:to-red-700 text-white font-extrabold py-3 sm:py-4 px-3 sm:px-4 rounded-2xl shadow-lg shadow-red-950/50 border-b-4 border-red-800 active:border-b-0 active:translate-y-1 transition flex items-center justify-center gap-2 text-xs sm:text-base">
+                <i class="fa-solid fa-hand text-base sm:text-xl"></i>
                 <span>FREAR (PARADA)</span>
             </button>
 
-            <button id="btnAccelTouch" class="bg-gradient-to-b from-emerald-400 to-green-600 active:from-green-500 active:to-green-700 text-slate-950 font-extrabold py-3.5 sm:py-4 px-4 rounded-2xl shadow-lg shadow-emerald-950/50 border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 transition flex items-center justify-center gap-2.5 text-sm sm:text-base">
-                <i class="fa-solid fa-gauge-high text-lg sm:text-xl"></i>
+            <button id="btnAccelTouch" class="bg-gradient-to-b from-emerald-400 to-green-600 active:from-green-500 active:to-green-700 text-slate-950 font-extrabold py-3 sm:py-4 px-3 sm:px-4 rounded-2xl shadow-lg shadow-emerald-950/50 border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 transition flex items-center justify-center gap-2 text-xs sm:text-base">
+                <i class="fa-solid fa-gauge-high text-base sm:text-xl"></i>
                 <span>ACELERAR ÔNIBUS</span>
             </button>
         </div>
@@ -219,10 +219,10 @@
                 <div class="inline-flex items-center gap-2 bg-emerald-600 text-white text-xs font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider mb-1.5 shadow">
                     <i class="fa-solid fa-school"></i> Destino Final: ESCOLA
                 </div>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-emerald-950">
+                <h2 class="text-lg sm:text-2xl font-extrabold text-emerald-950 leading-tight">
                     Transporte Escolar Seguro e Confortável Concluído!
                 </h2>
-                <p class="text-xs sm:text-sm text-amber-900 font-medium mt-0.5">
+                <p class="text-xs sm:text-sm text-amber-900 font-medium mt-1">
                     Todos os <strong id="finalStudentsCount">12</strong> estudantes chegaram com segurança, pontualidade e bem-estar à <strong>ESCOLA</strong>!
                 </p>
             </div>
@@ -231,18 +231,18 @@
             <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                 
                 <!-- Lista dos 5 Benefícios Conquistados -->
-                <div class="sm:col-span-8 bg-white/90 rounded-2xl p-3.5 border-2 border-emerald-600/30 shadow-inner">
-                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-2.5 pb-1.5 border-b border-emerald-900/10">
+                <div class="sm:col-span-8 bg-white/90 rounded-2xl p-3 sm:p-3.5 border-2 border-emerald-600/30 shadow-inner">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-2 pb-1.5 border-b border-emerald-900/10">
                         <i class="fa-solid fa-circle-check text-emerald-600"></i> Benefícios Conquistados nas 5 Paradas:
                     </h3>
-                    <ul id="finalBenefitsList" class="space-y-2 text-xs text-slate-800 max-h-[240px] overflow-y-auto custom-scroll pr-1">
+                    <ul id="finalBenefitsList" class="space-y-2 text-xs text-slate-800 max-h-[210px] sm:max-h-[240px] overflow-y-auto custom-scroll pr-1">
                         <!-- Preenchido via JS -->
                     </ul>
                 </div>
 
                 <!-- Cartão do Candidato a Diretor -->
                 <div class="sm:col-span-4 flex flex-col items-center text-center bg-gradient-to-b from-emerald-50 to-amber-100/80 p-3 rounded-2xl border-2 border-amber-600/40 shadow">
-                    <div class="w-32 h-36 sm:w-36 sm:h-40 rounded-xl overflow-hidden border-4 border-emerald-700 bg-white shadow-md">
+                    <div class="w-28 h-32 sm:w-36 sm:h-40 rounded-xl overflow-hidden border-4 border-emerald-700 bg-white shadow-md">
                         <img id="finalPhotoPreview" src="./gilmar.png" alt="Prof. Gilmar Macedo Brito" class="w-full h-full object-cover">
                     </div>
                     <p class="mt-2 text-xs font-extrabold text-emerald-950">Prof. Gilmar Macedo Brito</p>
@@ -278,7 +278,7 @@
     </div>
 
     <script>
-        // --- AVATAR ILUSTRATIVO PADRÃO (SVG DATA URI LEVE PARA PRÉ-VISUALIZAÇÃO INICIAL) ---
+        // --- AVATAR ILUSTRATIVO PADRÃO ---
         const DEFAULT_AVATAR_SVG = "./gilmar.png";
 
         // --- DADOS DAS 5 PARADAS SEGURAS ---
@@ -530,8 +530,6 @@
 
         // --- DESENHO DAS 5 PARADAS SEGURAS ---
         function drawBusStops() {
-            const busCenterWorld = worldX + 190;
-
             BUS_STOPS.forEach(stop => {
                 const screenX = stop.x - worldX + 190;
                 if (screenX < -180 || screenX > WIDTH + 180) return;
@@ -585,26 +583,21 @@
         }
 
         function drawWaitingStudent(x, y, colors) {
-            // Mochila
             ctx.fillStyle = '#0284c7';
             ctx.beginPath();
             ctx.roundRect(x - 10, y + 6, 8, 14, 3);
             ctx.fill();
-            // Corpo
             ctx.fillStyle = colors.shirt;
             ctx.beginPath();
             ctx.roundRect(x - 6, y + 4, 14, 18, 4);
             ctx.fill();
-            // Pernas
             ctx.fillStyle = '#1e293b';
             ctx.fillRect(x - 4, y + 22, 4, 12);
             ctx.fillRect(x + 2, y + 22, 4, 12);
-            // Cabeça
             ctx.fillStyle = '#fed7aa';
             ctx.beginPath();
             ctx.arc(x + 1, y - 3, 7, 0, Math.PI * 2);
             ctx.fill();
-            // Cabelo
             ctx.fillStyle = colors.hair;
             ctx.beginPath();
             ctx.arc(x + 1, y - 5, 7, Math.PI, 0);
@@ -616,11 +609,9 @@
             const screenX = FINAL_SCHOOL_X - worldX + 190;
             if (screenX > WIDTH + 120) return;
 
-            // Zona de chegada no asfalto
             ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
             ctx.fillRect(screenX - 60, 366, 250, 84);
 
-            // Edifício da ESCOLA
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.roundRect(screenX, 155, 240, 205, [16, 16, 0, 0]);
@@ -629,7 +620,6 @@
             ctx.strokeStyle = '#15803d';
             ctx.stroke();
 
-            // Faixa Superior Verde com o nome ESCOLA
             ctx.fillStyle = '#15803d';
             ctx.fillRect(screenX, 174, 240, 48);
 
@@ -638,7 +628,6 @@
             ctx.textAlign = 'center';
             ctx.fillText('ESCOLA', screenX + 120, 207);
 
-            // Janelas laterais da Escola
             ctx.fillStyle = '#bae6fd';
             ctx.strokeStyle = '#0369a1';
             ctx.lineWidth = 2.5;
@@ -649,7 +638,6 @@
                 ctx.stroke();
             });
 
-            // Relógio Escolar Central
             ctx.fillStyle = '#fef9c3';
             ctx.beginPath();
             ctx.arc(screenX + 120, 258, 17, 0, Math.PI * 2);
@@ -664,7 +652,6 @@
             ctx.lineTo(screenX + 129, 258);
             ctx.stroke();
 
-            // Porta principal dupla
             ctx.fillStyle = '#0284c7';
             ctx.beginPath();
             ctx.roundRect(screenX + 94, 292, 52, 68, [6, 6, 0, 0]);
@@ -689,13 +676,11 @@
             ctx.save();
             ctx.translate(busX, busY);
 
-            // Sombra
             ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
             ctx.beginPath();
             ctx.ellipse(busW / 2, busH + 14, busW * 0.48, 10, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Unidade de Ar-Condicionado no teto
             ctx.fillStyle = '#f8fafc';
             ctx.beginPath();
             ctx.roundRect(45, -10, 125, 11, [6, 6, 0, 0]);
@@ -704,7 +689,6 @@
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
-            // Carroceria Amarela Escolar
             ctx.fillStyle = '#facc15';
             ctx.beginPath();
             ctx.roundRect(0, 0, busW, busH, [18, 30, 10, 10]);
@@ -713,7 +697,6 @@
             ctx.strokeStyle = '#065f46';
             ctx.stroke();
 
-            // Faixa Verde Lateral
             ctx.fillStyle = '#15803d';
             ctx.fillRect(2, 56, busW - 4, 20);
             ctx.fillStyle = '#ffffff';
@@ -721,7 +704,6 @@
             ctx.textAlign = 'left';
             ctx.fillText('TRANSPORTE ESCOLAR SEGURO', 22, 69);
 
-            // 4 Janelas de Passageiros (com até 3 alunos visíveis por janela = 12 alunos)
             const winPositions = [16, 64, 112, 160];
             winPositions.forEach((wx, wIdx) => {
                 ctx.fillStyle = '#e0f2fe';
@@ -732,7 +714,6 @@
                 ctx.strokeStyle = '#0369a1';
                 ctx.stroke();
 
-                // Desenha os estudantes sentados nesta janela
                 for (let slot = 0; slot < 3; slot++) {
                     const studentIndex = wIdx * 3 + slot;
                     if (studentIndex < studentsOnBoard) {
@@ -740,19 +721,16 @@
                         const sy = 34;
                         const col = STUDENT_COLORS[studentIndex % STUDENT_COLORS.length];
 
-                        // Ombros
                         ctx.fillStyle = col.shirt;
                         ctx.beginPath();
                         ctx.arc(sx, sy + 12, 6, Math.PI, 0);
                         ctx.fill();
 
-                        // Cabeça
                         ctx.fillStyle = '#fed7aa';
                         ctx.beginPath();
                         ctx.arc(sx, sy, 5, 0, Math.PI * 2);
                         ctx.fill();
 
-                        // Cabelo
                         ctx.fillStyle = col.hair;
                         ctx.beginPath();
                         ctx.arc(sx, sy - 2, 5, Math.PI, 0);
@@ -761,7 +739,6 @@
                 }
             });
 
-            // Cabine Dianteira (Para-brisa com o Grilo Motorista)
             ctx.fillStyle = '#bae6fd';
             ctx.beginPath();
             ctx.roundRect(210, 12, 46, 40, [8, 22, 6, 6]);
@@ -770,10 +747,8 @@
             ctx.strokeStyle = '#0369a1';
             ctx.stroke();
 
-            // Grilo Motorista ao Volante
             drawCricketDriver(230, 34);
 
-            // Volante
             ctx.strokeStyle = '#0f172a';
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -781,13 +756,11 @@
             ctx.lineTo(250, 38);
             ctx.stroke();
 
-            // Farol Dianteiro
             ctx.fillStyle = '#fef08a';
             ctx.beginPath();
             ctx.arc(busW - 4, 76, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            // Rodas Giratórias
             drawWheel(56, busH + 2, 20);
             drawWheel(206, busH + 2, 20);
 
@@ -798,13 +771,11 @@
             ctx.save();
             ctx.translate(x, y);
 
-            // Corpo do Grilo
             ctx.fillStyle = '#22c55e';
             ctx.beginPath();
             ctx.arc(0, 10, 9, Math.PI, 0);
             ctx.fill();
 
-            // Cabeça do Grilo
             ctx.fillStyle = '#4ade80';
             ctx.beginPath();
             ctx.arc(2, -1, 9, 0, Math.PI * 2);
@@ -813,20 +784,17 @@
             ctx.strokeStyle = '#15803d';
             ctx.stroke();
 
-            // Quepe de Motorista (Verde e Amarelo)
             ctx.fillStyle = '#15803d';
             ctx.beginPath();
             ctx.ellipse(2, -9, 10, 4, -0.1, 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = '#facc15';
             ctx.fillRect(-4, -8, 13, 2.5);
-            // Aba do quepe
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
             ctx.ellipse(9, -7, 6, 2, 0.1, 0, Math.PI * 2);
             ctx.fill();
 
-            // Olho expressivo
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(6, -2, 3.5, 0, Math.PI * 2);
@@ -836,7 +804,6 @@
             ctx.arc(7.2, -2, 1.8, 0, Math.PI * 2);
             ctx.fill();
 
-            // Sorriso
             ctx.beginPath();
             ctx.arc(5, 2, 3, 0.1, Math.PI * 0.85);
             ctx.strokeStyle = '#14532d';
@@ -851,19 +818,16 @@
             ctx.translate(wx, wy);
             ctx.rotate(wheelRotation);
 
-            // Pneu
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
             ctx.fill();
 
-            // Calota
             ctx.fillStyle = '#e2e8f0';
             ctx.beginPath();
             ctx.arc(0, 0, radius * 0.52, 0, Math.PI * 2);
             ctx.fill();
 
-            // Parafusos da roda para efeito de rotação
             ctx.fillStyle = '#15803d';
             for (let a = 0; a < Math.PI * 2; a += Math.PI / 2) {
                 ctx.beginPath();
@@ -891,7 +855,7 @@
         function handleStopBoarding(stop) {
             stop.boarded = true;
             busSpeed = 0;
-            boardingPauseFrames = 42; // Breve parada segura para embarque dos estudantes
+            boardingPauseFrames = 42;
             stopsCompleted++;
             studentsOnBoard = Math.min(12, studentsOnBoard + 2);
 
@@ -939,7 +903,6 @@
                 return;
             }
 
-            // Aceleração rápida e frenagem responsiva
             if (isAccelerating) {
                 busSpeed = Math.min(MAX_SPEED, busSpeed + 0.34);
             } else if (isBraking) {
@@ -952,7 +915,6 @@
             wheelRotation += busSpeed * 0.085;
             if (busSpeed > 0.2) bouncePhase += 0.38;
 
-            // Atualiza HUD de velocidade e barra de progresso
             document.getElementById('hudSpeedText').textContent = `${Math.round(busSpeed * 7.5)} km/h`;
             const progressPct = Math.min(100, Math.round((worldX / FINAL_SCHOOL_X) * 100));
             document.getElementById('routeProgressBar').style.width = `${progressPct}%`;
@@ -960,7 +922,6 @@
             const busCenterWorld = worldX + 190;
             let nearStop = false;
 
-            // Verifica aproximação e embarque nas 5 paradas
             BUS_STOPS.forEach(stop => {
                 if (stop.boarded) return;
                 const dist = stop.x - busCenterWorld;
@@ -969,12 +930,10 @@
                     nearStop = true;
                 }
 
-                // Se reduzir dentro da faixa segura
                 if (Math.abs(dist) <= 85 && busSpeed <= 1.8) {
                     worldX = stop.x - 190;
                     handleStopBoarding(stop);
                 }
-                // Assistência de segurança: se chegar no fim da faixa sem frear totalmente, para suavemente na parada
                 else if (dist < -65) {
                     worldX = stop.x - 190;
                     handleStopBoarding(stop);
@@ -988,7 +947,6 @@
                 brakeAlert.classList.add('hidden');
             }
 
-            // Verifica chegada na ESCOLA
             if (busCenterWorld >= FINAL_SCHOOL_X) {
                 triggerFinalArrival();
             }
@@ -1078,7 +1036,7 @@
         document.getElementById('btnStartRoute').addEventListener('click', startNewRoute);
         document.getElementById('btnPlayAgain').addEventListener('click', startNewRoute);
 
-        // Renderização inicial de fundo para a tela de abertura
+        // Renderização inicial de fundo
         render();
     </script>
 </body>
