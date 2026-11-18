@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expresso do Grilo: Transporte Escolar Seguro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .handwritten {
+            font-family: 'Caveat', cursive;
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-bounce-subtle {
+            animation: bounce-subtle 1.6s infinite ease-in-out;
+        }
+        @keyframes pop-in {
+            0% { transform: scale(0.85) translateY(10px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .animate-pop-in {
+            animation: pop-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .stamp-fulfilled {
+            transform: rotate(-6deg);
+            border: 4px dashed #15803d;
+            color: #15803d;
+            box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.14);
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #fef3c7;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #15803d;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 overflow-x-hidden">
+
+    <!-- Container Principal do Jogo -->
+    <div class="relative w-full max-w-5xl bg-slate-800 rounded-3xl shadow-2xl border-4 border-emerald-500/40 overflow-hidden flex flex-col">
+        
+        <!-- HUD Superior -->
+        <div class="w-full bg-slate-950/90 px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between border-b border-slate-700/70 gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600/20 border border-emerald-400/40 flex items-center justify-center text-xl sm:text-2xl">
+                    🦗
+                </div>
+                <div>
+                    <h1 class="text-sm sm:text-lg font-extrabold bg-gradient-to-r from-emerald-400 via-yellow-300 to-emerald-300 bg-clip-text text-transparent leading-tight">
+                        Expresso do Grilo: Transporte Escolar Seguro
+                    </h1>
+                    <p class="text-[11px] text-amber-300 font-semibold">
+                        Prof. Gilmar Macedo Brito • Direção Escolar
+                    </p>
+                </div>
+            </div>
+
+            <!-- Indicadores de Status -->
+            <div class="flex items-center gap-2 sm:gap-3 text-xs">
+                <div class="bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-location-dot text-yellow-400"></i>
+                    <span class="text-slate-400 hidden sm:inline">Paradas:</span>
+                    <span id="hudStopsText" class="font-bold text-yellow-300">0/5</span>
+                </div>
+                <div class="bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-users text-sky-400"></i>
+                    <span class="text-slate-400 hidden sm:inline">Alunos:</span>
+                    <span id="hudStudentsText" class="font-bold text-sky-300">2/12</span>
+                </div>
+                <div class="bg-emerald-950/80 px-2.5 py-1.5 rounded-xl border border-emerald-500/40 flex items-center gap-1.5">
+                    <i class="fa-solid fa-gauge-high text-emerald-400"></i>
+                    <span id="hudSpeedText" class="font-bold text-emerald-300">0 km/h</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso da Rota -->
+        <div class="w-full bg-slate-950 px-4 py-1.5 border-b border-slate-800">
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden relative">
+                <div id="routeProgressBar" class="h-full bg-gradient-to-r from-emerald-500 via-yellow-400 to-emerald-400 transition-all duration-100 rounded-full" style="width: 0%;"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
+                <span>Início</span>
+                <span id="stopBadge1" class="transition-colors">Parada 1</span>
+                <span id="stopBadge2" class="transition-colors">Parada 2</span>
+                <span id="stopBadge3" class="transition-colors">Parada 3</span>
+                <span id="stopBadge4" class="transition-colors">Parada 4</span>
+                <span id="stopBadge5" class="transition-colors">Parada 5</span>
+                <span class="text-emerald-400 font-bold"><i class="fa-solid fa-school"></i> ESCOLA</span>
+            </div>
+        </div>
+
+        <!-- Área Principal do Canvas -->
+        <div class="relative w-full aspect-[16/9] min-h-[290px] max-h-[65vh] bg-sky-300 overflow-hidden" id="gameContainer">
+            <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+            <!-- Balão Informativo das Melhorias nas Paradas -->
+            <div id="infoBalloon" class="hidden absolute top-3 left-1/2 -translate-x-1/2 w-[92%] max-w-lg bg-white/95 text-slate-900 rounded-2xl shadow-2xl border-4 border-emerald-600 p-3 sm:p-4 z-20 animate-pop-in">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-lg font-extrabold shadow" id="balloonBadge">
+                        1
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                                Melhoria Conquistada na Parada
+                            </span>
+                            <span class="text-[11px] font-bold text-amber-700">+2 Alunos a bordo</span>
+                        </div>
+                        <h3 id="balloonTitle" class="text-sm sm:text-base font-extrabold text-slate-900 mt-1 leading-snug">
+                            Otimização de Rotas e Redução do Tempo de Viagem
+                        </h3>
+                        <p id="balloonDesc" class="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                            Trajetos planejados para que nenhum estudante passe horas desnecessárias no trânsito.
+                        </p>
+                    </div>
+                </div>
+                <!-- Triângulo apontando para o ônibus -->
+                <div class="w-4 h-4 bg-white border-r-4 border-b-4 border-emerald-600 rotate-45 mx-auto -mb-5 mt-1"></div>
+            </div>
+
+            <!-- Indicador de Aproximação de Parada -->
+            <div id="brakeAlert" class="hidden absolute top-3 right-3 bg-yellow-400 text-slate-950 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-lg border-2 border-slate-900 animate-bounce">
+                <i class="fa-solid fa-hand"></i> Parada à frente! Reduza para embarcar!
+            </div>
+
+            <!-- TELA INICIAL (OVERLAY) -->
+            <div id="startOverlay" class="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-green-900/95 to-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-6 z-30 overflow-y-auto">
+                <div class="w-full max-w-2xl bg-white/10 border-2 border-yellow-400/40 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                        
+                        <!-- Coluna da Foto do Candidato a Diretor -->
+                        <div class="sm:col-span-5 flex flex-col items-center text-center bg-white/95 text-slate-900 rounded-2xl p-3.5 border-4 border-yellow-400 shadow-lg">
+                            <div class="relative w-28 h-32 sm:w-32 sm:h-36 rounded-xl overflow-hidden bg-gradient-to-b from-emerald-100 to-emerald-200 border-2 border-emerald-600 shadow-inner flex items-center justify-center">
+                                <img id="startPhotoPreview" src="" alt="Foto do Candidato a Diretor" class="w-full h-full object-cover">
+                            </div>
+
+                            <label for="candidatePhotoInput" class="mt-2.5 cursor-pointer bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-camera"></i> Trocar Foto do Diretor
+                            </label>
+                            <input type="file" id="candidatePhotoInput" accept="image/*" class="hidden">
+
+                            <div class="mt-2 pt-2 border-t border-slate-200 w-full">
+                                <p class="handwritten text-xl text-emerald-900 font-bold leading-none">Prof. Gilmar Macedo Brito</p>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">Candidato a Diretor</p>
+                            </div>
+                        </div>
+
+                        <!-- Coluna de Apresentação da Missão -->
+                        <div class="sm:col-span-7 flex flex-col justify-between text-center sm:text-left space-y-3">
+                            <div>
+                                <span class="inline-flex items-center gap-1.5 bg-yellow-400 text-slate-950 text-[11px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                                    <span>🦗</span> Expresso do Grilo
+                                </span>
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1.5 leading-tight">
+                                    Transporte Escolar Seguro e Confortável!
+                                </h2>
+                                <p class="text-xs sm:text-sm text-emerald-100 mt-1.5 leading-relaxed">
+                                    Assuma o volante com o <strong>Grilo Motorista</strong>! Acelere na estrada, pare suavemente nas <strong>5 paradas seguras</strong> para embarcar os estudantes e chegue até a <strong>ESCOLA</strong>.
+                                </p>
+                            </div>
+
+                            <div class="bg-emerald-950/70 border border-emerald-400/30 rounded-xl p-2.5 text-[11px] text-emerald-100 space-y-1">
+                                <div class="font-bold text-yellow-300 uppercase tracking-wide">Controles Rápidos:</div>
+                                <div class="flex flex-wrap justify-center sm:justify-start gap-2">
+                                    <span class="bg-white/10 px-2 py-0.5 rounded"><kbd class="font-bold text-yellow-300">→</kbd> / <kbd class="font-bold text-yellow-300">ESPAÇO</kbd> Acelerar</span>
+                                    <span class="bg-white/10 px-2 py-0.5 rounded"><kbd class="font-bold text-yellow-300">←</kbd> Frear na Parada</span>
+                                </div>
+                            </div>
+
+                            <button id="btnStartRoute" class="w-full bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-300 hover:from-yellow-300 hover:to-amber-300 text-slate-950 font-extrabold py-3 px-6 rounded-2xl shadow-lg shadow-yellow-500/25 transition transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-base">
+                                <i class="fa-solid fa-bus"></i> Iniciar Rota
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles Táteis Grandes na Parte Inferior (Mobile & Desktop) -->
+        <div class="w-full bg-slate-950 p-3 sm:p-4 border-t border-slate-800 grid grid-cols-2 gap-3 sm:gap-4">
+            <button id="btnBrakeTouch" class="bg-gradient-to-b from-rose-500 to-red-600 active:from-red-600 active:to-red-700 text-white font-extrabold py-3.5 sm:py-4 px-4 rounded-2xl shadow-lg shadow-red-950/50 border-b-4 border-red-800 active:border-b-0 active:translate-y-1 transition flex items-center justify-center gap-2.5 text-sm sm:text-base">
+                <i class="fa-solid fa-hand text-lg sm:text-xl"></i>
+                <span>FREAR (PARADA)</span>
+            </button>
+
+            <button id="btnAccelTouch" class="bg-gradient-to-b from-emerald-400 to-green-600 active:from-green-500 active:to-green-700 text-slate-950 font-extrabold py-3.5 sm:py-4 px-4 rounded-2xl shadow-lg shadow-emerald-950/50 border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 transition flex items-center justify-center gap-2.5 text-sm sm:text-base">
+                <i class="fa-solid fa-gauge-high text-lg sm:text-xl"></i>
+                <span>ACELERAR ÔNIBUS</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL / CERTIFICADO FINAL: CHEGADA À ESCOLA -->
+    <div id="finalModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto hidden">
+        <div class="relative w-full max-w-3xl bg-amber-50 text-slate-800 rounded-3xl shadow-2xl border-4 sm:border-8 border-emerald-700/50 p-4 sm:p-6 my-auto animate-pop-in">
+            
+            <!-- Cabeçalho -->
+            <div class="text-center border-b-2 border-amber-900/15 pb-3 mb-4">
+                <div class="inline-flex items-center gap-2 bg-emerald-600 text-white text-xs font-extrabold px-3.5 py-1 rounded-full uppercase tracking-wider mb-1.5 shadow">
+                    <i class="fa-solid fa-school"></i> Destino Final: ESCOLA
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-emerald-950">
+                    Transporte Escolar Seguro e Confortável Concluído!
+                </h2>
+                <p class="text-xs sm:text-sm text-amber-900 font-medium mt-0.5">
+                    Todos os <strong id="finalStudentsCount">12</strong> estudantes chegaram com segurança, pontualidade e bem-estar à <strong>ESCOLA</strong>!
+                </p>
+            </div>
+
+            <!-- Corpo: Lista dos 5 Benefícios + Foto do Candidato -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                
+                <!-- Lista dos 5 Benefícios Conquistados -->
+                <div class="sm:col-span-8 bg-white/90 rounded-2xl p-3.5 border-2 border-emerald-600/30 shadow-inner">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5 mb-2.5 pb-1.5 border-b border-emerald-900/10">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Benefícios Conquistados nas 5 Paradas:
+                    </h3>
+                    <ul id="finalBenefitsList" class="space-y-2 text-xs text-slate-800 max-h-[240px] overflow-y-auto custom-scroll pr-1">
+                        <!-- Preenchido via JS -->
+                    </ul>
+                </div>
+
+                <!-- Cartão do Candidato a Diretor -->
+                <div class="sm:col-span-4 flex flex-col items-center text-center bg-gradient-to-b from-emerald-50 to-amber-100/80 p-3 rounded-2xl border-2 border-amber-600/40 shadow">
+                    <div class="w-32 h-36 sm:w-36 sm:h-40 rounded-xl overflow-hidden border-4 border-emerald-700 bg-white shadow-md">
+                        <img id="finalPhotoPreview" src="./gilmar.png" alt="Prof. Gilmar Macedo Brito" class="w-full h-full object-cover">
+                    </div>
+                    <p class="mt-2 text-xs font-extrabold text-emerald-950">Prof. Gilmar Macedo Brito</p>
+                    <span class="mt-0.5 text-[10px] font-bold text-emerald-800 bg-emerald-200/80 px-2.5 py-0.5 rounded-full">
+                        Direção Escolar
+                    </span>
+                </div>
+            </div>
+
+            <!-- Rodapé com Carimbo META CUMPRIDA e Assinatura Caligráfica -->
+            <div class="mt-4 pt-3 border-t border-amber-900/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="stamp-fulfilled px-4 py-1 rounded-xl text-center font-black uppercase text-xs sm:text-sm tracking-widest">
+                    META CUMPRIDA
+                </div>
+
+                <div class="text-center sm:text-right">
+                    <p class="handwritten text-2xl sm:text-3xl text-emerald-950 font-bold leading-none">
+                        Prof. Gilmar Macedo Brito
+                    </p>
+                    <p class="text-[10px] uppercase font-bold text-amber-800/80 tracking-wider mt-0.5">
+                        Assinatura Oficial do Candidato a Diretor
+                    </p>
+                </div>
+            </div>
+
+            <!-- Botão Jogar Novamente -->
+            <div class="mt-4 flex justify-end">
+                <button id="btnPlayAgain" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-extrabold px-6 py-2.5 rounded-2xl shadow-lg transition transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate-right"></i> Jogar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- AVATAR ILUSTRATIVO PADRÃO (SVG DATA URI LEVE PARA PRÉ-VISUALIZAÇÃO INICIAL) ---
+        const DEFAULT_AVATAR_SVG = "./gilmar.png";
+
+        // --- DADOS DAS 5 PARADAS SEGURAS ---
+        const BUS_STOPS = [
+            {
+                number: 1,
+                x: 950,
+                title: "Otimização de Rotas e Redução do Tempo de Viagem",
+                desc: "Itinerários reorganizados para reduzir o tempo dentro do ônibus e evitar atrasos nas aulas.",
+                boarded: false
+            },
+            {
+                number: 2,
+                x: 1900,
+                title: "Ônibus Climatizados e Assentos Confortáveis",
+                desc: "Frota equipada com ar-condicionado revisado, poltronas ergonômicas e cintos de segurança em todos os bancos.",
+                boarded: false
+            },
+            {
+                number: 3,
+                x: 2850,
+                title: "Manutenção Preventiva e Segurança Veicular Rigorosa",
+                desc: "Inspeção periódica de freios, pneus, iluminação e acompanhamento técnico contínuo da frota.",
+                boarded: false
+            },
+            {
+                number: 4,
+                x: 3800,
+                title: "Pontos de Embarque Iluminados e Cobertos",
+                desc: "Paradas seguras, sinalizadas e protegidas contra chuva e sol para acolher os estudantes com dignidade.",
+                boarded: false
+            },
+            {
+                number: 5,
+                x: 4750,
+                title: "Monitoramento de Horários em Tempo Real para Alunos",
+                desc: "Acompanhamento digital dos horários de saída e chegada para mais tranquilidade dos alunos e famílias.",
+                boarded: false
+            }
+        ];
+
+        const FINAL_SCHOOL_X = 5650;
+
+        // --- SISTEMA DE ÁUDIO SINTETIZADO (WEB AUDIO API) ---
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+            playHorn() {
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                [330, 415].forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                    gain.gain.setValueAtTime(0.18, now + idx * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.18);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.12);
+                    osc.stop(now + idx * 0.12 + 0.18);
+                });
+            }
+            playStopSuccess() {
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99];
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.09);
+                    gain.gain.setValueAtTime(0.2, now + i * 0.09);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.25);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.09);
+                    osc.stop(now + i * 0.09 + 0.25);
+                });
+            }
+            playVictory() {
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.5];
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.11);
+                    gain.gain.setValueAtTime(0.22, now + i * 0.11);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.11 + 0.45);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.11);
+                    osc.stop(now + i * 0.11 + 0.45);
+                });
+            }
+        }
+        const sfx = new SoundEffects();
+
+        // --- UPLOAD E PRÉ-VISUALIZAÇÃO DA FOTO DO CANDIDATO ---
+        let currentCandidatePhoto = DEFAULT_AVATAR_SVG;
+        const startPhotoPreview = document.getElementById('startPhotoPreview');
+        const finalPhotoPreview = document.getElementById('finalPhotoPreview');
+        const candidatePhotoInput = document.getElementById('candidatePhotoInput');
+
+        startPhotoPreview.src = currentCandidatePhoto;
+        finalPhotoPreview.src = currentCandidatePhoto;
+
+        candidatePhotoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                currentCandidatePhoto = ev.target.result;
+                startPhotoPreview.src = currentCandidatePhoto;
+                finalPhotoPreview.src = currentCandidatePhoto;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // --- CONFIGURAÇÃO DO CANVAS E FÍSICA ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const WIDTH = 900;
+        const HEIGHT = 480;
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+
+        let gameRunning = false;
+        let worldX = 0;
+        let busSpeed = 0;
+        const MAX_SPEED = 10.6;
+        let isAccelerating = false;
+        let isBraking = false;
+        let wheelRotation = 0;
+        let bouncePhase = 0;
+        let studentsOnBoard = 2;
+        let stopsCompleted = 0;
+        let boardingPauseFrames = 0;
+        let balloonTimer = null;
+        let animId = null;
+
+        // Cores dos estudantes nas janelas do ônibus
+        const STUDENT_COLORS = [
+            { shirt: '#38bdf8', hair: '#1e293b' },
+            { shirt: '#f472b6', hair: '#451a03' },
+            { shirt: '#facc15', hair: '#0f172a' },
+            { shirt: '#a78bfa', hair: '#3f2e3e' },
+            { shirt: '#fb923c', hair: '#1c1917' },
+            { shirt: '#4ade80', hair: '#27272a' },
+            { shirt: '#f87171', hair: '#422006' },
+            { shirt: '#2dd4bf', hair: '#09090b' },
+            { shirt: '#e879f9', hair: '#3b0764' },
+            { shirt: '#60a5fa', hair: '#172554' },
+            { shirt: '#fde047', hair: '#292524' },
+            { shirt: '#34d399', hair: '#064e3b' }
+        ];
+
+        // --- FUNÇÕES DE DESENHO DO CENÁRIO ---
+        function drawEnvironment() {
+            // Céu
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, 340);
+            skyGrad.addColorStop(0, '#0284c7');
+            skyGrad.addColorStop(0.65, '#7dd3fc');
+            skyGrad.addColorStop(1, '#e0f2fe');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, WIDTH, 340);
+
+            // Sol
+            ctx.fillStyle = '#fef08a';
+            ctx.beginPath();
+            ctx.arc(780, 68, 34, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Nuvens em paralaxe suave
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            for (let i = 0; i < 6; i++) {
+                const cx = ((i * 260 - worldX * 0.15) % (WIDTH + 260) + (WIDTH + 260)) % (WIDTH + 260) - 100;
+                const cy = 55 + (i % 3) * 28;
+                ctx.beginPath();
+                ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+                ctx.arc(cx + 20, cy - 8, 26, 0, Math.PI * 2);
+                ctx.arc(cx + 42, cy, 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Colinas verdes ao fundo
+            ctx.fillStyle = '#22c55e';
+            for (let i = 0; i < 5; i++) {
+                const hx = ((i * 340 - worldX * 0.3) % (WIDTH + 340) + (WIDTH + 340)) % (WIDTH + 340) - 150;
+                ctx.beginPath();
+                ctx.arc(hx + 120, 345, 145, Math.PI, 0);
+                ctx.fill();
+            }
+
+            // Gramado da margem
+            ctx.fillStyle = '#16a34a';
+            ctx.fillRect(0, 330, WIDTH, 34);
+
+            // Árvores e postes solares decorativos
+            for (let i = 0; i < 8; i++) {
+                const tx = ((i * 210 - worldX * 0.85) % (WIDTH + 210) + (WIDTH + 210)) % (WIDTH + 210) - 60;
+                // Tronco
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(tx + 12, 292, 10, 42);
+                // Copa
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath();
+                ctx.arc(tx + 17, 282, 24, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#4ade80';
+                ctx.beginPath();
+                ctx.arc(tx + 11, 276, 12, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Estrada asfaltada
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(0, 364, WIDTH, 92);
+
+            // Meio-fio verde e amarelo
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(0, 360, WIDTH, 6);
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(0, 452, WIDTH, 28);
+
+            // Faixas tracejadas da pista
+            ctx.fillStyle = '#f8fafc';
+            const dashPeriod = 90;
+            const dashOffset = -(worldX % dashPeriod);
+            for (let x = dashOffset; x < WIDTH; x += dashPeriod) {
+                ctx.fillRect(x, 407, 48, 6);
+            }
+        }
+
+        // --- DESENHO DAS 5 PARADAS SEGURAS ---
+        function drawBusStops() {
+            const busCenterWorld = worldX + 190;
+
+            BUS_STOPS.forEach(stop => {
+                const screenX = stop.x - worldX + 190;
+                if (screenX < -180 || screenX > WIDTH + 180) return;
+
+                // Zona Segura Demarcada no Asfalto (Faixa Verde)
+                ctx.fillStyle = stop.boarded ? 'rgba(34, 197, 94, 0.25)' : 'rgba(250, 204, 21, 0.35)';
+                ctx.fillRect(screenX - 85, 366, 170, 84);
+
+                ctx.strokeStyle = stop.boarded ? '#22c55e' : '#facc15';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([8, 6]);
+                ctx.strokeRect(screenX - 85, 366, 170, 84);
+                ctx.setLineDash([]);
+
+                // Abrigo Coberto e Iluminado da Parada
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(screenX - 42, 250, 6, 110);
+                ctx.fillRect(screenX + 36, 250, 6, 110);
+
+                // Telhado do abrigo
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath();
+                ctx.roundRect(screenX - 52, 238, 104, 16, 6);
+                ctx.fill();
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Luz LED do abrigo
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(screenX - 25, 254, 50, 4);
+
+                // Placa da Parada
+                ctx.fillStyle = stop.boarded ? '#16a34a' : '#eab308';
+                ctx.beginPath();
+                ctx.roundRect(screenX - 36, 206, 72, 26, 8);
+                ctx.fill();
+                ctx.fillStyle = stop.boarded ? '#ffffff' : '#0f172a';
+                ctx.font = 'bold 12px Fredoka, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(stop.boarded ? `✓ PARADA ${stop.number}` : `PARADA ${stop.number}`, screenX, 223);
+
+                // Estudantes aguardando embarque (antes de parar)
+                if (!stop.boarded) {
+                    const s1 = STUDENT_COLORS[(stop.number * 2) % STUDENT_COLORS.length];
+                    const s2 = STUDENT_COLORS[(stop.number * 2 + 1) % STUDENT_COLORS.length];
+                    drawWaitingStudent(screenX - 16, 326, s1);
+                    drawWaitingStudent(screenX + 14, 326, s2);
+                }
+            });
+        }
+
+        function drawWaitingStudent(x, y, colors) {
+            // Mochila
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.roundRect(x - 10, y + 6, 8, 14, 3);
+            ctx.fill();
+            // Corpo
+            ctx.fillStyle = colors.shirt;
+            ctx.beginPath();
+            ctx.roundRect(x - 6, y + 4, 14, 18, 4);
+            ctx.fill();
+            // Pernas
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(x - 4, y + 22, 4, 12);
+            ctx.fillRect(x + 2, y + 22, 4, 12);
+            // Cabeça
+            ctx.fillStyle = '#fed7aa';
+            ctx.beginPath();
+            ctx.arc(x + 1, y - 3, 7, 0, Math.PI * 2);
+            ctx.fill();
+            // Cabelo
+            ctx.fillStyle = colors.hair;
+            ctx.beginPath();
+            ctx.arc(x + 1, y - 5, 7, Math.PI, 0);
+            ctx.fill();
+        }
+
+        // --- DESENHO DO PRÉDIO FINAL: ESCOLA ---
+        function drawFinalSchool() {
+            const screenX = FINAL_SCHOOL_X - worldX + 190;
+            if (screenX > WIDTH + 120) return;
+
+            // Zona de chegada no asfalto
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
+            ctx.fillRect(screenX - 60, 366, 250, 84);
+
+            // Edifício da ESCOLA
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(screenX, 155, 240, 205, [16, 16, 0, 0]);
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#15803d';
+            ctx.stroke();
+
+            // Faixa Superior Verde com o nome ESCOLA
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(screenX, 174, 240, 48);
+
+            ctx.fillStyle = '#facc15';
+            ctx.font = 'bold 26px Fredoka, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('ESCOLA', screenX + 120, 207);
+
+            // Janelas laterais da Escola
+            ctx.fillStyle = '#bae6fd';
+            ctx.strokeStyle = '#0369a1';
+            ctx.lineWidth = 2.5;
+            [26, 170].forEach(wx => {
+                ctx.beginPath();
+                ctx.roundRect(screenX + wx, 240, 44, 38, 6);
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            // Relógio Escolar Central
+            ctx.fillStyle = '#fef9c3';
+            ctx.beginPath();
+            ctx.arc(screenX + 120, 258, 17, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(screenX + 120, 258);
+            ctx.lineTo(screenX + 120, 247);
+            ctx.moveTo(screenX + 120, 258);
+            ctx.lineTo(screenX + 129, 258);
+            ctx.stroke();
+
+            // Porta principal dupla
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.roundRect(screenX + 94, 292, 52, 68, [6, 6, 0, 0]);
+            ctx.fill();
+            ctx.strokeStyle = '#0369a1';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(screenX + 120, 292);
+            ctx.lineTo(screenX + 120, 360);
+            ctx.stroke();
+        }
+
+        // --- DESENHO DO ÔNIBUS ESCOLAR COM O GRILO MOTORISTA E ALUNOS NAS JANELAS ---
+        function drawBus() {
+            const busX = 115;
+            const bounceY = busSpeed > 0.2 ? Math.sin(bouncePhase) * 2 : 0;
+            const busY = 272 + bounceY;
+            const busW = 265;
+            const busH = 96;
+
+            ctx.save();
+            ctx.translate(busX, busY);
+
+            // Sombra
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+            ctx.beginPath();
+            ctx.ellipse(busW / 2, busH + 14, busW * 0.48, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Unidade de Ar-Condicionado no teto
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.roundRect(45, -10, 125, 11, [6, 6, 0, 0]);
+            ctx.fill();
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Carroceria Amarela Escolar
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, busW, busH, [18, 30, 10, 10]);
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#065f46';
+            ctx.stroke();
+
+            // Faixa Verde Lateral
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(2, 56, busW - 4, 20);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px Fredoka, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('TRANSPORTE ESCOLAR SEGURO', 22, 69);
+
+            // 4 Janelas de Passageiros (com até 3 alunos visíveis por janela = 12 alunos)
+            const winPositions = [16, 64, 112, 160];
+            winPositions.forEach((wx, wIdx) => {
+                ctx.fillStyle = '#e0f2fe';
+                ctx.beginPath();
+                ctx.roundRect(wx, 12, 42, 36, 7);
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#0369a1';
+                ctx.stroke();
+
+                // Desenha os estudantes sentados nesta janela
+                for (let slot = 0; slot < 3; slot++) {
+                    const studentIndex = wIdx * 3 + slot;
+                    if (studentIndex < studentsOnBoard) {
+                        const sx = wx + 9 + slot * 12;
+                        const sy = 34;
+                        const col = STUDENT_COLORS[studentIndex % STUDENT_COLORS.length];
+
+                        // Ombros
+                        ctx.fillStyle = col.shirt;
+                        ctx.beginPath();
+                        ctx.arc(sx, sy + 12, 6, Math.PI, 0);
+                        ctx.fill();
+
+                        // Cabeça
+                        ctx.fillStyle = '#fed7aa';
+                        ctx.beginPath();
+                        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Cabelo
+                        ctx.fillStyle = col.hair;
+                        ctx.beginPath();
+                        ctx.arc(sx, sy - 2, 5, Math.PI, 0);
+                        ctx.fill();
+                    }
+                }
+            });
+
+            // Cabine Dianteira (Para-brisa com o Grilo Motorista)
+            ctx.fillStyle = '#bae6fd';
+            ctx.beginPath();
+            ctx.roundRect(210, 12, 46, 40, [8, 22, 6, 6]);
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#0369a1';
+            ctx.stroke();
+
+            // Grilo Motorista ao Volante
+            drawCricketDriver(230, 34);
+
+            // Volante
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(244, 50);
+            ctx.lineTo(250, 38);
+            ctx.stroke();
+
+            // Farol Dianteiro
+            ctx.fillStyle = '#fef08a';
+            ctx.beginPath();
+            ctx.arc(busW - 4, 76, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Rodas Giratórias
+            drawWheel(56, busH + 2, 20);
+            drawWheel(206, busH + 2, 20);
+
+            ctx.restore();
+        }
+
+        function drawCricketDriver(x, y) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Corpo do Grilo
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(0, 10, 9, Math.PI, 0);
+            ctx.fill();
+
+            // Cabeça do Grilo
+            ctx.fillStyle = '#4ade80';
+            ctx.beginPath();
+            ctx.arc(2, -1, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#15803d';
+            ctx.stroke();
+
+            // Quepe de Motorista (Verde e Amarelo)
+            ctx.fillStyle = '#15803d';
+            ctx.beginPath();
+            ctx.ellipse(2, -9, 10, 4, -0.1, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(-4, -8, 13, 2.5);
+            // Aba do quepe
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.ellipse(9, -7, 6, 2, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Olho expressivo
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(6, -2, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(7.2, -2, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sorriso
+            ctx.beginPath();
+            ctx.arc(5, 2, 3, 0.1, Math.PI * 0.85);
+            ctx.strokeStyle = '#14532d';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawWheel(wx, wy, radius) {
+            ctx.save();
+            ctx.translate(wx, wy);
+            ctx.rotate(wheelRotation);
+
+            // Pneu
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Calota
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.52, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Parafusos da roda para efeito de rotação
+            ctx.fillStyle = '#15803d';
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 2) {
+                ctx.beginPath();
+                ctx.arc(Math.cos(a) * 6, Math.sin(a) * 6, 2.2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        // --- LÓGICA DAS PARADAS E BALÃO INFORMATIVO ---
+        function showImprovementBalloon(stop) {
+            const balloon = document.getElementById('infoBalloon');
+            document.getElementById('balloonBadge').textContent = stop.number;
+            document.getElementById('balloonTitle').textContent = stop.title;
+            document.getElementById('balloonDesc').textContent = stop.desc;
+
+            balloon.classList.remove('hidden');
+            if (balloonTimer) clearTimeout(balloonTimer);
+            balloonTimer = setTimeout(() => {
+                balloon.classList.add('hidden');
+            }, 4600);
+        }
+
+        function handleStopBoarding(stop) {
+            stop.boarded = true;
+            busSpeed = 0;
+            boardingPauseFrames = 42; // Breve parada segura para embarque dos estudantes
+            stopsCompleted++;
+            studentsOnBoard = Math.min(12, studentsOnBoard + 2);
+
+            document.getElementById('hudStopsText').textContent = `${stopsCompleted}/5`;
+            document.getElementById('hudStudentsText').textContent = `${studentsOnBoard}/12`;
+            document.getElementById(`stopBadge${stop.number}`).classList.add('text-emerald-400', 'font-extrabold');
+
+            sfx.playStopSuccess();
+            showImprovementBalloon(stop);
+        }
+
+        function triggerFinalArrival() {
+            gameRunning = false;
+            busSpeed = 0;
+            sfx.playVictory();
+
+            document.getElementById('finalStudentsCount').textContent = studentsOnBoard;
+            const list = document.getElementById('finalBenefitsList');
+            list.innerHTML = '';
+
+            BUS_STOPS.forEach(s => {
+                const li = document.createElement('li');
+                li.className = "bg-emerald-50/90 border border-emerald-200 rounded-xl p-2 flex items-start gap-2";
+                li.innerHTML = `
+                    <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">${s.number}</span>
+                    <div>
+                        <p class="font-bold text-emerald-950 leading-tight">${s.title}</p>
+                        <p class="text-[11px] text-slate-600 mt-0.5">${s.desc}</p>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+
+            document.getElementById('finalModal').classList.remove('hidden');
+        }
+
+        // --- LOOP PRINCIPAL ---
+        function update() {
+            if (!gameRunning) return;
+
+            if (boardingPauseFrames > 0) {
+                boardingPauseFrames--;
+                busSpeed = 0;
+                document.getElementById('hudSpeedText').textContent = '0 km/h';
+                return;
+            }
+
+            // Aceleração rápida e frenagem responsiva
+            if (isAccelerating) {
+                busSpeed = Math.min(MAX_SPEED, busSpeed + 0.34);
+            } else if (isBraking) {
+                busSpeed = Math.max(0, busSpeed - 0.58);
+            } else {
+                busSpeed = Math.max(0, busSpeed - 0.14);
+            }
+
+            worldX += busSpeed;
+            wheelRotation += busSpeed * 0.085;
+            if (busSpeed > 0.2) bouncePhase += 0.38;
+
+            // Atualiza HUD de velocidade e barra de progresso
+            document.getElementById('hudSpeedText').textContent = `${Math.round(busSpeed * 7.5)} km/h`;
+            const progressPct = Math.min(100, Math.round((worldX / FINAL_SCHOOL_X) * 100));
+            document.getElementById('routeProgressBar').style.width = `${progressPct}%`;
+
+            const busCenterWorld = worldX + 190;
+            let nearStop = false;
+
+            // Verifica aproximação e embarque nas 5 paradas
+            BUS_STOPS.forEach(stop => {
+                if (stop.boarded) return;
+                const dist = stop.x - busCenterWorld;
+
+                if (dist > 0 && dist < 340) {
+                    nearStop = true;
+                }
+
+                // Se reduzir dentro da faixa segura
+                if (Math.abs(dist) <= 85 && busSpeed <= 1.8) {
+                    worldX = stop.x - 190;
+                    handleStopBoarding(stop);
+                }
+                // Assistência de segurança: se chegar no fim da faixa sem frear totalmente, para suavemente na parada
+                else if (dist < -65) {
+                    worldX = stop.x - 190;
+                    handleStopBoarding(stop);
+                }
+            });
+
+            const brakeAlert = document.getElementById('brakeAlert');
+            if (nearStop && busSpeed > 3.5) {
+                brakeAlert.classList.remove('hidden');
+            } else {
+                brakeAlert.classList.add('hidden');
+            }
+
+            // Verifica chegada na ESCOLA
+            if (busCenterWorld >= FINAL_SCHOOL_X) {
+                triggerFinalArrival();
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            drawEnvironment();
+            drawBusStops();
+            drawFinalSchool();
+            drawBus();
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            if (gameRunning) {
+                animId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function startNewRoute() {
+            sfx.init();
+            sfx.playHorn();
+
+            worldX = 0;
+            busSpeed = 0;
+            wheelRotation = 0;
+            bouncePhase = 0;
+            studentsOnBoard = 2;
+            stopsCompleted = 0;
+            boardingPauseFrames = 0;
+            isAccelerating = false;
+            isBraking = false;
+
+            BUS_STOPS.forEach(s => {
+                s.boarded = false;
+                document.getElementById(`stopBadge${s.number}`).classList.remove('text-emerald-400', 'font-extrabold');
+            });
+
+            document.getElementById('hudStopsText').textContent = '0/5';
+            document.getElementById('hudStudentsText').textContent = '2/12';
+            document.getElementById('hudSpeedText').textContent = '0 km/h';
+            document.getElementById('routeProgressBar').style.width = '0%';
+            document.getElementById('infoBalloon').classList.add('hidden');
+            document.getElementById('brakeAlert').classList.add('hidden');
+            document.getElementById('startOverlay').classList.add('hidden');
+            document.getElementById('finalModal').classList.add('hidden');
+
+            gameRunning = true;
+            if (animId) cancelAnimationFrame(animId);
+            gameLoop();
+        }
+
+        // --- EVENTOS DE CONTROLE (TECLADO, MOUSE E TOQUE) ---
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowRight' || e.code === 'Space') {
+                if (gameRunning) e.preventDefault();
+                isAccelerating = true;
+            }
+            if (e.code === 'ArrowLeft') {
+                if (gameRunning) e.preventDefault();
+                isBraking = true;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowRight' || e.code === 'Space') isAccelerating = false;
+            if (e.code === 'ArrowLeft') isBraking = false;
+        });
+
+        const btnAccelTouch = document.getElementById('btnAccelTouch');
+        const btnBrakeTouch = document.getElementById('btnBrakeTouch');
+
+        const bindHoldButton = (btn, onStart, onEnd) => {
+            btn.addEventListener('mousedown', (e) => { e.preventDefault(); onStart(); });
+            btn.addEventListener('mouseup', onEnd);
+            btn.addEventListener('mouseleave', onEnd);
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); onStart(); }, { passive: false });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); onEnd(); });
+            btn.addEventListener('touchcancel', onEnd);
+        };
+
+        bindHoldButton(btnAccelTouch, () => { isAccelerating = true; }, () => { isAccelerating = false; });
+        bindHoldButton(btnBrakeTouch, () => { isBraking = true; }, () => { isBraking = false; });
+
+        document.getElementById('btnStartRoute').addEventListener('click', startNewRoute);
+        document.getElementById('btnPlayAgain').addEventListener('click', startNewRoute);
+
+        // Renderização inicial de fundo para a tela de abertura
+        render();
+    </script>
+</body>
+</html>
